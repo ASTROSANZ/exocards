@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121212">
+    <title>Exocards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #121212; --surface: #1f1f1f; --surface-2: #2c2c2c; --card: #333333;
+            --text: #f4f4f4; --muted: #a2a2a2;
+            --accent: #9b59b6; --brand: #8e44ad; --brand-dark: #732d91; --soft: #d9c2e6;
+            --line: rgba(255,255,255,.08);
+            --serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+            --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 120px; -webkit-text-size-adjust: 100%; }
+        body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        img { max-width: 100%; display: block; }
+        :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+        /* Header flutuante */
+        header {
+            position: sticky; top: 10px; z-index: 50;
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px;
+            margin: 10px 12px 0; padding: 12px 16px 10px;
+            background: rgba(44,44,44,.7);
+            backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+            border: 1px solid rgba(255,255,255,.1); border-radius: 28px;
+            box-shadow: 0 12px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+        }
+        .logo {
+            font-family: var(--serif); font-size: 28px; font-weight: 700; letter-spacing: .16em;
+            background: linear-gradient(90deg, #fff, var(--soft) 55%, var(--accent));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        nav { width: 100%; }
+        nav ul { list-style: none; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+        nav ul::-webkit-scrollbar { display: none; }
+        nav ul li a {
+            display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px;
+            color: #fff; text-decoration: none; font-size: 15px; white-space: nowrap; transition: .25s;
+        }
+        nav ul li a:hover { color: var(--soft); background: rgba(155,89,182,.22); }
+
+        /* Hero */
+        .banner {
+            position: relative; overflow: hidden; text-align: center;
+            padding: 56px 22px 72px; margin-top: -76px; padding-top: 140px;
+            background:
+                radial-gradient(60% 45% at 15% 5%, rgba(155,89,182,.5), transparent 70%),
+                radial-gradient(55% 40% at 95% 70%, rgba(115,45,145,.45), transparent 70%),
+                url('banner.jpg') no-repeat center / cover;
+            background-color: var(--bg);
+        }
+        .banner::after { content: ''; position: absolute; inset: auto 0 0 0; height: 120px; background: linear-gradient(transparent, var(--surface)); pointer-events: none; }
+        .banner-text { position: relative; z-index: 2; }
+        .banner h1 {
+            font-family: var(--serif); font-weight: 600; font-size: clamp(42px, 12.5vw, 84px); line-height: 1.02; letter-spacing: -.015em;
+            max-width: 12ch; margin: 0 auto 20px; text-wrap: balance;
+            background: linear-gradient(180deg, #fff 35%, var(--soft)); -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .banner p { font-size: clamp(16px, 4.2vw, 19px); font-weight: 300; color: #d8d8d8; max-width: 36ch; margin: 0 auto 30px; }
+        .banner p:empty { display: none; }
+        .actions { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+        .btn, .btn-ghost {
+            display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 300px; min-height: 56px;
+            padding: 0 36px; border-radius: 999px; text-decoration: none; font-size: 17px; font-weight: 600; letter-spacing: .02em; transition: .3s;
+        }
+        .banner .btn {
+            color: #fff; background: linear-gradient(135deg, var(--accent), var(--brand-dark));
+            border: 1px solid rgba(255,255,255,.2);
+            box-shadow: 0 14px 36px rgba(142,68,173,.55), inset 0 1px 0 rgba(255,255,255,.3);
+        }
+        .banner .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(142,68,173,.7), inset 0 1px 0 rgba(255,255,255,.3); }
+        .btn-ghost { color: var(--soft); border: 1px solid rgba(217,194,230,.35); background: rgba(255,255,255,.03); }
+        .btn-ghost:hover { background: rgba(155,89,182,.18); color: #fff; }
+
+        .hero-cards { position: relative; z-index: 1; height: 230px; max-width: 360px; margin: 48px auto 0; }
+        .hero-cards img {
+            position: absolute; width: 68%; aspect-ratio: 1.586/1; object-fit: cover; border-radius: 16px;
+            border: 1px solid rgba(255,255,255,.18); box-shadow: 0 24px 50px rgba(0,0,0,.6), 0 0 60px rgba(142,68,173,.35);
+        }
+        .hero-cards img:nth-child(1) { left: 0; top: 36px; transform: rotate(-13deg); opacity: .85; }
+        .hero-cards img:nth-child(2) { right: 0; top: 30px; transform: rotate(11deg); opacity: .85; }
+        .hero-cards img:nth-child(3) { left: 16%; top: 0; z-index: 2; animation: flutuar 6s ease-in-out infinite; }
+        @keyframes flutuar { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-12px) rotate(1deg); } }
+
+        /* Títulos */
+        .produtos h2, .sobre h2, .contato h2 {
+            font-family: var(--serif); font-size: clamp(36px, 9vw, 54px); line-height: 1.08; font-weight: 600; color: #fff; margin-bottom: 44px;
+        }
+        .produtos h2::after, .sobre h2::after, .contato h2::after {
+            content: ''; display: block; width: 72px; height: 2px; margin: 18px auto 0; border-radius: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        /* Produtos */
+        .produtos { padding: 56px 16px 80px; text-align: center; background: radial-gradient(60% 25% at 50% 0%, rgba(155,89,182,.14), transparent 70%), var(--surface); }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 1200px; margin: 0 auto; }
+        .produto {
+            position: relative; overflow: hidden; display: flex; flex-direction: column; text-align: left;
+            padding: 12px 12px 22px; border: 1px solid transparent; border-radius: 30px;
+            background:
+                linear-gradient(160deg, #3a3a3a, #2c2c2c 60%, #272727) padding-box,
+                linear-gradient(145deg, rgba(155,89,182,.7), rgba(255,255,255,.07) 40%, rgba(142,68,173,.4)) border-box;
+            box-shadow: 0 20px 44px rgba(0,0,0,.4); transition: transform .35s, box-shadow .35s;
+        }
+        .produto::after {
+            content: ''; position: absolute; inset: 0; pointer-events: none; transform: translateX(-130%);
+            background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.08) 50%, transparent 62%); transition: transform .9s;
+        }
+        .produto img {
+            width: 100%; aspect-ratio: 1.586/1; object-fit: cover; border-radius: 22px; margin-bottom: 20px; background: var(--surface-2);
+            box-shadow: 0 16px 34px rgba(142,68,173,.3), inset 0 0 0 1px rgba(255,255,255,.08);
+        }
+        .produto h3, .produto p, .produto > a { margin-left: 12px; margin-right: 12px; }
+        .produto h3 { font-family: var(--serif); font-size: 28px; line-height: 1.12; font-weight: 600; color: #fff; margin-bottom: 12px; }
+        .produto p:nth-of-type(1) {
+            align-self: flex-start; font-size: 13px; color: var(--soft); padding: 5px 14px; border-radius: 999px;
+            background: rgba(155,89,182,.16); border: 1px solid rgba(155,89,182,.3);
+        }
+        .produto p:nth-of-type(2) { font-family: var(--serif); font-size: 38px; line-height: 1.1; font-weight: 700; color: #fff; margin-top: 14px; margin-bottom: 20px; }
+        .produto > a { display: block; margin-top: auto; text-decoration: none; }
+        .produto button {
+            width: 100%; min-height: 54px; border: 1px solid rgba(255,255,255,.18); border-radius: 999px;
+            background: linear-gradient(135deg, var(--accent), var(--brand-dark)); color: #fff;
+            font-family: var(--sans); font-size: 16px; font-weight: 600; letter-spacing: .02em; cursor: pointer;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.25); transition: filter .25s;
+        }
+        .produto button:hover { filter: brightness(1.15); }
+
+        /* Como usar / Contato */
+        .sobre, .contato { padding: 64px 22px; text-align: center; background: var(--bg); }
+        .sobre p { font-size: 17px; color: var(--muted); max-width: 60ch; margin: 0 auto 10px; }
+        .sobre p:empty { display: none; }
+        .passos { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; max-width: 1000px; margin: 0 auto; }
+        .passos li {
+            padding: 28px 22px 26px; text-align: center; border: 1px solid transparent; border-radius: 28px;
+            background:
+                linear-gradient(160deg, #2c2c2c, #232323) padding-box,
+                linear-gradient(145deg, rgba(155,89,182,.55), rgba(255,255,255,.05) 45%, rgba(142,68,173,.3)) border-box;
+        }
+        .passos .num {
+            display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; margin-bottom: 16px; border-radius: 50%;
+            font-family: var(--serif); font-size: 26px; font-weight: 700; color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--brand-dark)); box-shadow: 0 10px 26px rgba(142,68,173,.45), inset 0 1px 0 rgba(255,255,255,.3);
+        }
+        .passos h3 { font-family: var(--serif); font-size: 26px; line-height: 1.15; font-weight: 600; color: #fff; margin-bottom: 8px; }
+        .sobre .passos p { font-size: 16px; margin: 0 auto; max-width: 30ch; }
+        .contato { background: radial-gradient(60% 90% at 50% 100%, rgba(142,68,173,.22), transparent 70%), var(--bg); }
+        .contato p {
+            display: block; max-width: 420px; margin: 0 auto 12px; padding: 16px 20px; font-size: 16px; color: var(--muted);
+            border: 1px solid var(--line); border-radius: 22px; background: rgba(255,255,255,.03);
+        }
+        .contato a { color: var(--soft); text-decoration: none; font-weight: 600; }
+        .contato a:hover { color: #fff; }
+
+        /* Footer */
+        footer {
+            padding: 32px 5% calc(28px + env(safe-area-inset-bottom)); text-align: center; background: var(--surface-2);
+            border-radius: 32px 32px 0 0; border-top: 1px solid var(--line);
+        }
+        footer .logo { display: inline-block; font-size: 24px; margin-bottom: 8px; }
+        footer p { font-size: 13px; color: var(--muted); }
+
+        @media (min-width: 560px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 28px; } .actions { flex-direction: row; justify-content: center; } .btn, .btn-ghost { width: auto; } }
+        @media (min-width: 768px) {
+            html { scroll-padding-top: 100px; }
+            header { flex-wrap: nowrap; max-width: 1100px; margin: 14px auto 0; padding: 12px 18px 12px 28px; border-radius: 999px; }
+            nav { width: auto; }
+            nav ul li a { font-size: 16px; }
+            .banner { padding: 190px 40px 120px; margin-top: -84px; }
+            .hero-cards { height: 300px; max-width: 460px; }
+            .produtos, .sobre, .contato { padding-top: 96px; padding-bottom: 96px; }
+        }
+        @media (min-width: 960px) {
+            .banner { display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 40px; text-align: left; max-width: none; padding-left: max(40px, calc(50% - 560px)); padding-right: max(40px, calc(50% - 560px)); }
+            .banner h1, .banner p { margin-left: 0; margin-right: 0; }
+            .actions { justify-content: flex-start; }
+            .hero-cards { margin: 0 auto; height: 340px; max-width: 520px; width: 100%; }
+            .grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1200px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (hover: hover) {
+            .produto:hover { transform: translateY(-8px); box-shadow: 0 30px 56px rgba(142,68,173,.35); }
+            .produto:hover::after { transform: translateX(130%); }
+        }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">EXOCARDS</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Início</a></li>
+                <li><a href="#produtos">Cartões</a></li>
+                <li><a href="#sobre">Como usar?</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="banner">
+        <div class="banner-text">
+            <h1>Escolha o Cartão Ideal para Você</h1>
+            <p>Uma estoque exclusivo com cartões novos todo dia.</p>
+            <p></p>
+            <div class="actions">
+                <a href="#produtos" class="btn">Ver Cartões</a>
+                <a href="#sobre" class="btn-ghost">Como usar?</a>
+            </div>
+        </div>
+        <div class="hero-cards" aria-hidden="true">
+            <img src="imagens/cartao9.png" alt="">
+            <img src="imagens/cartao1.png" alt="">
+            <img src="imagens/cartao5.png" alt="">
+        </div>
+    </section>
+
+    <section id="produtos" class="produtos">
+        <h2>Cartões Disponíveis</h2>
+        <div class="grid">
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao1.png" alt="Cartão MasterCard Platinum">
+                <h3>Cartão MasterCard Platinum</h3>
+                <p>Limite Máximo: R$10.000</p>
+                <p>Valor: R$80</p>
+                <a href="detalhes.html?name=MasterCard%20Platinum&limit=10000&value=80&img=imagens/cartao1.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao2.png" alt="Cartão Visa Gold">
+                <h3>Cartão Visa Gold</h3>
+                <p>Limite máximo: R$1.500</p>
+                <p>Valor: R$20</p>
+                <a href="detalhes.html?name=Visa%20Gold&limit=1500&value=20&img=imagens/cartao2.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao3.png" alt="Cartão Maestro Silver">
+                <h3>Cartão Maestro Silver</h3>
+                <p>Limite máximo: R$3.000</p>
+                <p>Valor: R$35</p>
+                <a href="detalhes.html?name=Maestro%20Silver&limit=3000&value=35&img=imagens/cartao3.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao4.png" alt="Cartão MasterCard Classic">
+                <h3>Cartão MasterCard Classic</h3>
+                <p>Limite máximo: R$3.000</p>
+                <p>Valor: R$35</p>
+                <a href="detalhes.html?name=MasterCard%20Classic&limit=3000&value=35&img=imagens/cartao4.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao5.png" alt="Cartão Union Black">
+                <h3>Cartão Union Black</h3>
+                <p>Limite máximo: R$15.000</p>
+                <p>Valor: R$150</p>
+                <a href="detalhes.html?name=Union%20Black&limit=15000&value=150&img=imagens/cartao5.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao6.png" alt="Cartão Visa Electron">
+                <h3>Cartão Visa Electron</h3>
+                <p>Limite máximo: R$4.000</p>
+                <p>Valor: R$45</p>
+                <a href="detalhes.html?name=Visa%20Electron&limit=4000&value=45&img=imagens/cartao6.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao7.png" alt="Cartão Hipercard">
+                <h3>Cartão Hipercard</h3>
+                <p>Limite máximo: R$6.000</p>
+                <p>Valor: R$80</p>
+                <a href="detalhes.html?name=Hipercard&limit=6000&value=80&img=imagens/cartao7.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao8.png" alt="Cartão MasterCard Platinum">
+                <h3>Cartão MasterCard Platinum</h3>
+                <p>Limite máximo: R$9.000</p>
+                <p>Valor: R$140</p>
+                <a href="detalhes.html?name=MasterCard%20Platinum&limit=9000&value=140&img=imagens/cartao8.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao9.png" alt="Cartão Elo Diamond">
+                <h3>Cartão Elo Diamond</h3>
+                <p>Limite máximo: R$12.000</p>
+                <p>Valor: R$190</p>
+                <a href="detalhes.html?name=Elo%20Diamond&limit=12000&value=190&img=imagens/cartao9.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+            <div class="produto">
+                <img loading="lazy" src="imagens/cartao10.png" alt="Cartão Maestro Gold">
+                <h3>Cartão Maestro Gold</h3>
+                <p>Limite máximo: R$3.000</p>
+                <p>Valor: R$35</p>
+                <a href="detalhes.html?name=Maestro%20Gold&limit=3000&value=35&img=imagens/cartao10.png">
+                    <button>Comprar</button>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="sobre" class="sobre">
+        <h2>Como Usar?</h2>
+        <ol class="passos">
+            <li>
+                <span class="num">1</span>
+                <h3>Escolha seu cartão</h3>
+                <p>Veja a coleção e compare o limite e o valor de cada modelo.</p>
+            </li>
+            <li>
+                <span class="num">2</span>
+                <h3>Toque em Comprar</h3>
+                <p>Confira os detalhes do cartão e conclua o seu pedido. Voce será redirecionado para o whatsapp e recebá o cartão assim que realizar o pagamento.</p>
+            </li>
+            <li>
+                <span class="num">3</span>
+                <h3>Use o cartão</h3>
+                <p>Com as informacoes do cartão voce pode utilizar ele para todo tipo de compras online em marketplaces e jogos, além de que os cartões podem ser adicionados a carteiras digitais como google pay e apple pay para compras fisicas.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="contato" class="contato">
+        <h2>Contato</h2>
+        <p>Email: <a href="mailto:contato@exometa.com">contato@exometa.com</a></p>
+        <p>Telefone: <a href="tel:+5511999855261">(45) 9958-9660</a></p>
+    </section>
+
+    <footer>
+        <div class="logo">EXOCARDS</div>
+    </footer>
+</body>
+</html>

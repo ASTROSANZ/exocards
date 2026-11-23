@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar pedido - EXOCARDS</title>
+    <link rel="stylesheet" href="confirmation.css">
+</head>
+<body>
+    <header>
+        <h1>Finalizar pedido</h1>
+    </header>
+
+    <main>
+        <section class="payment-info">
+
+            <!-- Resumo do pedido -->
+            <div id="estado-resumo" class="estado">
+                <h2 id="nome-cartao"></h2>
+                <p class="valor-label">Valor:</p>
+                <p class="valor-destaque">R$ <span id="valor-cartao">0,00</span></p>
+
+                <p class="aviso">Clique no botão abaixo para realizar o pagamento pelo whatsapp. Você receberá as informacoes do cartão imediatamente após o pagamento.</p>
+
+                <a id="btn-whatsapp" class="btn-whatsapp" href="#">Continuar no WhatsApp</a>
+            </div>
+
+            <!-- Erro -->
+            <div id="estado-erro" class="estado" style="display:none;">
+                <div class="erro-icon">❌</div>
+                <h2>Pedido inválido</h2>
+                <p>Valor não informado.</p>
+                <button onclick="window.history.back()" class="btn-voltar">Voltar</button>
+            </div>
+
+        </section>
+    </main>
+
+    <footer>
+        <p>Atendimento via WhatsApp</p>
+    </footer>
+
+    <script>
+        // Formato: 55 + DDD + número, só dígitos.
+        // Celular tem 11 dígitos (DDD + 9 + 8). Confira se não falta o 9 aqui.
+        const WHATSAPP = '554598313626';
+
+        const params = new URLSearchParams(window.location.search);
+        const valor = parseFloat(params.get('value'));
+        const nomeCartao = params.get('name') || 'Cartão';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!valor || isNaN(valor)) {
+                document.getElementById('estado-resumo').style.display = 'none';
+                document.getElementById('estado-erro').style.display = 'block';
+                return;
+            }
+
+            const valorFmt = valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            document.getElementById('nome-cartao').textContent = nomeCartao;
+            document.getElementById('valor-cartao').textContent = valorFmt;
+
+            const mensagem =
+                `Olá! Quero comprar:\n` +
+                `*${nomeCartao}*\n` +
+                `Valor: R$ ${valorFmt}\n\n` +
+                `Favor gerar código PIX para pagamento.`;
+
+            const link = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
+            document.getElementById('btn-whatsapp').href = link;
+        });
+    </script>
+</body>
+</html>
